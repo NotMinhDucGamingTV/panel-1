@@ -6,20 +6,37 @@ const config = require('../config.json');
 async function getSMTPSettings() {
   const smtpSettings = await db.get('smtp_settings');
   const name = await db.get('name') || 'Skyport';
-
+const transporter = null
+  
   if (!smtpSettings) {
     throw new Error('SMTP settings not found');
   }
 
-  const transporter = nodemailer.createTransport({
+  if (smtpSettings.port == 587 || smtpSettings.port == 25) {
+    secure = false
+    transporter = nodemailer.createTransport({
     host: smtpSettings.server,
     port: smtpSettings.port,
-    secure: true,
+    secure: secure,
+    auth: {
+      user: smtpSettings.username,
+      pass: smtpSettings.password,
+    },
+    tls: {
+        rejectUnauthorized: true 
+    },
+  });
+  } else {
+        transporter = nodemailer.createTransport({
+    host: smtpSettings.server,
+    port: smtpSettings.port,
+    secure: secure,
     auth: {
       user: smtpSettings.username,
       pass: smtpSettings.password,
     },
   });
+  }
 
   return { transporter, smtpSettings, name };
 }
