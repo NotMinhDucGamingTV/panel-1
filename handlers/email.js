@@ -6,7 +6,8 @@ const config = require('../config.json');
 async function getSMTPSettings() {
   const smtpSettings = await db.get('smtp_settings');
   const name = await db.get('name') || 'Skyport';
-const transporter = null
+  let secure = true
+let transporter = null
   
   if (!smtpSettings) {
     throw new Error('SMTP settings not found');
